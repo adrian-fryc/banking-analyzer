@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 /**
  * Klasa służąca do analizy finansowej transakcji bankowych.
+ * Autor Jan Brzechwa
  */
 
 public class TransactionAnalyzer {
