@@ -11,6 +11,10 @@ import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+/**
+ * Klasa służąca do analizy finansowej transakcji bankowych.
+ */
+
 public class TransactionAnalyzer {
     private final List<Transaction> transactions;
 
