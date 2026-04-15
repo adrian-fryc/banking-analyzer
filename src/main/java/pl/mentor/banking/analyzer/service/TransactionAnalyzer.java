@@ -1,5 +1,6 @@
 package pl.mentor.banking.analyzer.service;
 
+import com.opencsv.CSVReader;
 import pl.mentor.banking.analyzer.model.Transaction;
 import pl.mentor.banking.analyzer.model.TransactionCategory;
 
