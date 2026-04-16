@@ -1,14 +1,14 @@
 package pl.mentor.banking.analyzer;
 
 import pl.mentor.banking.analyzer.model.Transaction;
-import pl.mentor.banking.analyzer.service.TransactionLoader;
+import pl.mentor.banking.analyzer.service.CsvTransactionLoader;
 
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
         // 1. Inicjalizacja loadera
-        TransactionLoader loader = new TransactionLoader();
+        CsvTransactionLoader loader = new CsvTransactionLoader();
 
         // 2. Próba wczytania danych z pliku w resources
         System.out.println("--- Rozpoczynam wczytywanie danych z CSV ---");
