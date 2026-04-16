@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransactionLoader {
+public class CsvTransactionLoader implements TransactionSource{
 
     public List<Transaction> loadTransactions(String fileName) {
         List<Transaction> transactions = new ArrayList<>();
