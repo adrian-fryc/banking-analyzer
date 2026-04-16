@@ -1,7 +1,9 @@
 package pl.mentor.banking.analyzer;
 
 import pl.mentor.banking.analyzer.model.Transaction;
+import pl.mentor.banking.analyzer.payment.PaymentTerminal;
 import pl.mentor.banking.analyzer.service.CsvTransactionLoader;
+import pl.mentor.banking.analyzer.service.VisaService;
 
 import java.util.List;
 
@@ -23,5 +25,11 @@ public class Main {
                 System.out.println(t);
             }
         }
+
+        VisaService visaService = new VisaService();
+        PaymentTerminal terminal = new PaymentTerminal(visaService);
+        System.out.println("Uruchamiam płatność kartą...");
+        terminal.performPayment(100.0);
+
     }
 }
