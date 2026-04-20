@@ -13,18 +13,18 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CsvTransactionLoader implements TransactionSource{
+public class CsvTransactionLoader extends BaseFileLoader{
 
-    public List<Transaction> loadTransactions(String fileName) {
+    public CsvTransactionLoader() {
+        super();
+        System.out.println("CsvTransactionLoader konstruktor end after super(BaseFileLoader)");
+    }
+
+    @Override
+    protected List<Transaction> parseTransactionData(String path) {
         List<Transaction> transactions = new ArrayList<>();
 
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
-             CSVReader reader = new CSVReader(new InputStreamReader(is))) {
-
-            if (is == null) {
-                throw new IllegalArgumentException("Nie znaleziono pliku: " + fileName);
-            }
-
+        try (CSVReader reader = new CSVReader(new java.io.FileReader(path))) {
             String[] line;
             while ((line = reader.readNext()) != null) {
                 // Mapujemy kolumny zgodnie z Twoim rekordem:
@@ -39,8 +39,10 @@ public class CsvTransactionLoader implements TransactionSource{
                 transactions.add(new Transaction(id, amount, currency, date, category));
             }
 
-        } catch (IOException | CsvValidationException e) {
-            System.err.println("Błąd podczas wczytywania: " + e.getMessage());
+        } catch (Exception e) {
+            // Łapiemy wszystko: błędy liczb, dat, brakujące kolumny
+            throw new RuntimeException("KRYTYCZNY BŁĄD DANYCH: Plik CSV jest uszkodzony lub zawiera błędy w linii. " +
+                    "Operacja przerwana dla zachowania spójności danych.", e);
         }
 
         return transactions;

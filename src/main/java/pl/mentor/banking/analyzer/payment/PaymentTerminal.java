@@ -1,18 +1,17 @@
 package pl.mentor.banking.analyzer.payment;
 
-import pl.mentor.banking.analyzer.service.PaymentMethod;
-
 public class PaymentTerminal {
 
     private final PaymentMethod method;
 
     public PaymentTerminal(PaymentMethod method){
-        System.out.println("PaymentMethod constructor..." + method.getClass().getName());
+        System.out.println("PaymentTerminal constructor..." + method.getClass().getName());
         this.method = method;
     }
 
     public void performPayment(double amount){
+        System.out.println("PaymentTerminal performPayment start: Zaraz rozpocznie się płatność przy pomocy: " + method.getClass().getName());
         var res = method.pay(amount);
-        System.out.println("Płatność: " + res);
+        System.out.println("PaymentTerminal performPayment end : Płatność: " + res);
     }
 }

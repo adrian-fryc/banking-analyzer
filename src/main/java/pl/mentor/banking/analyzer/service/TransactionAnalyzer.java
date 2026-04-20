@@ -20,8 +20,13 @@ import java.util.stream.Collectors;
 public class TransactionAnalyzer {
     private final List<Transaction> transactions;
 
-    public TransactionAnalyzer(List<Transaction> transactions){
-        this.transactions = List.copyOf(transactions);
+    public TransactionAnalyzer(TransactionSource loader, String path){
+        System.out.println("TransactionAnalyzer konstruktor start");
+        this.transactions = loader.loadTransactions(path);
+        System.out.println("TransactionAnalyzer konstruktor end");
+    }
+    public List<Transaction> getTransactions() {
+        return transactions;
     }
 
     public BigDecimal calculateTotalSpentInCategory(TransactionCategory category){

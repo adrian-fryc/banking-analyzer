@@ -18,12 +18,12 @@ public class TransactionAnalyzerTest {
     @BeforeEach
     void setUp() {
         // Arrange - wspólne dla wszystkich testów
-        var transactions = List.of(
+        TransactionSource mockLoader = path -> List.of(
                 new Transaction("1", new BigDecimal("100.00"), "PLN", LocalDate.now(), TransactionCategory.FOOD),
                 new Transaction("2", new BigDecimal("50.00"), "PLN", LocalDate.now(), TransactionCategory.FOOD),
                 new Transaction("3", new BigDecimal("1000.00"), "PLN", LocalDate.now(), TransactionCategory.SALARY)
         );
-        this.analyzer = new TransactionAnalyzer(transactions);
+        this.analyzer = new TransactionAnalyzer(mockLoader, "any-path-doesnt-matter.csv");
     }
 
     @Test
@@ -49,8 +49,8 @@ public class TransactionAnalyzerTest {
 
     @Test
     void shouldReturnEmptyOptionalWhenNoTransactions(){
-        List<Transaction> emptyList = List.of();
-        var analyzerEmpty = new TransactionAnalyzer(emptyList);
+        TransactionSource mockLoader = path -> List.of();
+        var analyzerEmpty = new TransactionAnalyzer(mockLoader, "");
         var result = analyzerEmpty.findHighestTransaction();
         assertTrue(result.isEmpty());
     }

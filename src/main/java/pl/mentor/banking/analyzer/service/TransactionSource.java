@@ -4,5 +4,5 @@ import pl.mentor.banking.analyzer.model.Transaction;
 import java.util.List;
 
 public interface TransactionSource {
-    List<Transaction> loadTransactions(String resourceName);
+    List<Transaction> loadTransactions(String path);
 }
