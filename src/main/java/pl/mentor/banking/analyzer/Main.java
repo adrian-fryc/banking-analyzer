@@ -31,6 +31,9 @@ public class Main {
 
             BankReportGenerator reportGenerator = new BankReportGenerator(analyzer);
             reportGenerator.printReport();
+            ReportExporter exporter = new ConsoleReportExporter();
+            reportGenerator.generateSummary(exporter);
+            reportGenerator.generateSummary(new FileReportExporter("moj_raport.txt")); // Do pliku
 
         }
 
