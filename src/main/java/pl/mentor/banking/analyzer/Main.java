@@ -3,6 +3,7 @@ package pl.mentor.banking.analyzer;
 import pl.mentor.banking.analyzer.exporter.ConsoleReportExporter;
 import pl.mentor.banking.analyzer.exporter.FileReportExporter;
 import pl.mentor.banking.analyzer.loader.CsvTransactionLoader;
+import pl.mentor.banking.analyzer.loader.TransactionLoaderFactory;
 import pl.mentor.banking.analyzer.loader.TransactionSource;
 import pl.mentor.banking.analyzer.model.Transaction;
 import pl.mentor.banking.analyzer.service.*;
@@ -12,12 +13,13 @@ import java.time.YearMonth;
 public class Main {
     public static void main(String[] args) {
         // 1. Inicjalizacja loadera
-        TransactionSource loader = new CsvTransactionLoader();
+        String path = "D:\\Programowanie(NAUKA)\\banking-analyzer\\src\\main\\resources\\transactions.json";
+        TransactionSource loader = TransactionLoaderFactory.getLoader(path);
 
         // 2. Próba wczytania danych z pliku w resources
 //        System.out.println("--- Rozpoczynam wczytywanie danych z CSV ---");
 //        List<Transaction> transactions = loader.loadTransactions("D:\\Programowanie(NAUKA)\\banking-analyzer\\src\\main\\resources\\transactions.csv");
-        TransactionAnalyzer analyzer = new TransactionAnalyzer(loader, "D:\\Programowanie(NAUKA)\\banking-analyzer\\src\\main\\resources\\transactions.csv");
+        TransactionAnalyzer analyzer = new TransactionAnalyzer(loader, path);
         // 3. Wyświetlenie wyników
         if (analyzer.getTransactions().isEmpty()) {
             System.out.println("Nie wczytano żadnych transakcji. Sprawdź plik CSV i logi błędów.");
