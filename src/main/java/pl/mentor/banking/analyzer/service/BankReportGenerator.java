@@ -4,7 +4,9 @@ import pl.mentor.banking.analyzer.exporter.ReportExporter;
 import pl.mentor.banking.analyzer.model.TransactionCategory;
 
 import java.math.BigDecimal;
+import java.time.Month;
 import java.time.YearMonth;
+import java.util.HashMap;
 import java.util.Map;
 
 public class BankReportGenerator {
@@ -47,12 +49,30 @@ public class BankReportGenerator {
         System.out.println("***************************************");
     }
 
-    private void appendSummaryTable(StringBuilder sb, Map<TransactionCategory, BigDecimal> summary){
+    private void appendCategoryTable(StringBuilder sb, Map<TransactionCategory, BigDecimal> summary){
         if (summary.isEmpty()) {
             sb.append("Brak danych do wyświetlenia.\n");
         } else {
             summary.entrySet().stream()
                     .sorted(Map.Entry.<TransactionCategory, BigDecimal>comparingByValue().reversed())
+                    .forEach(entry -> {
+                        // Składamy tekst w formacie "Kategoria: Suma"
+                        String row = String.format("- %-15s: %10.2f PLN\n",
+                                entry.getKey(), entry.getValue());
+                        sb.append(row);
+                    });
+
+            sb.append("----------------------------------------\n");
+
+        }
+    }
+
+    private <K extends Comparable<? super K>> void appendGenericTable(StringBuilder sb, Map<K, BigDecimal> summary){
+        if (summary.isEmpty()) {
+            sb.append("Brak danych do wyświetlenia.\n");
+        } else {
+            summary.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
                     .forEach(entry -> {
                         // Składamy tekst w formacie "Kategoria: Suma"
                         String row = String.format("- %-15s: %10.2f PLN\n",
@@ -73,7 +93,7 @@ public class BankReportGenerator {
         sb.append("========================================\n");
         sb.append("           RAPORT FINANSOWY             \n");
         sb.append("========================================\n");
-        appendSummaryTable(sb, summary);
+        appendCategoryTable(sb, summary);
 
         analyzer.findHighestTransaction().ifPresent(t -> {
             String highest = String.format("NAJWYŻSZA TRANSAKCJA: %s (%.2f %s)\n",
@@ -101,11 +121,24 @@ public class BankReportGenerator {
             return;
         }else{
             var summary = analyzer.calculateExpensesByCategory(monthlyTransactions);
-            appendSummaryTable(sb, summary);
+            appendCategoryTable(sb, summary);
 
             var total = analyzer.calculateTotalInMonth(yearMonth);
             sb.append("SUMA WYDATKÓW: ").append(total).append(" PLN\n");
             exporter.export(sb.toString());
         }
+    }
+
+    public void generateAnnualReport(int year, ReportExporter exporter){
+        StringBuilder strB = new StringBuilder(); // Nasz "bufor
+        strB.append("========================================\n");
+        strB.append("  RAPORT FINANSOWY ZA ROK ").append(year).append(" \n");
+        strB.append("========================================\n");
+        Map<Month, BigDecimal> monthlyTotals = new HashMap<>();
+        for (Month month : Month.values()) {
+            monthlyTotals.put(month, analyzer.calculateTotalInMonth(YearMonth.of(year, month)));
+        }
+        appendGenericTable(strB, monthlyTotals);
+        exporter.export(strB.toString());
     }
 }
