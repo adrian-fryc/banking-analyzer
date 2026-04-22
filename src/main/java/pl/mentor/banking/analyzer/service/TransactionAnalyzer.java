@@ -53,6 +53,7 @@ public class TransactionAnalyzer {
                 .collect(Collectors.groupingBy(Transaction::category, Collectors.reducing(BigDecimal.ZERO, Transaction::amount, BigDecimal::add)));
     }
 
+//    Meotda do obliczania średniej z transakcji
     public BigDecimal calculateAverageTransactionAmount() {
         return transactions.stream()
                 .map(Transaction::amount) // Wyciągnij same kwoty
