@@ -1,4 +1,4 @@
-package pl.mentor.banking.analyzer.service;
+package pl.mentor.banking.analyzer.exporter;
 
 public class FileReportExporter implements ReportExporter{
     private final String fileName;

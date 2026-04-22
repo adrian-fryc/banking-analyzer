@@ -1,8 +1,10 @@
 package pl.mentor.banking.analyzer.service;
 
+import pl.mentor.banking.analyzer.exporter.ReportExporter;
 import pl.mentor.banking.analyzer.model.TransactionCategory;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.Map;
 
 public class BankReportGenerator {
@@ -45,15 +47,7 @@ public class BankReportGenerator {
         System.out.println("***************************************");
     }
 
-    public void generateSummary(ReportExporter exporter) {
-        StringBuilder sb = new StringBuilder(); // Nasz "bufor" na tekst
-        var summary = analyzer.calculateExpensesByCategory();
-
-        // Zamiast System.out.println, używamy sb.append()
-        sb.append("========================================\n");
-        sb.append("           RAPORT FINANSOWY             \n");
-        sb.append("========================================\n");
-
+    private void appendSummaryTable(StringBuilder sb, Map<TransactionCategory, BigDecimal> summary){
         if (summary.isEmpty()) {
             sb.append("Brak danych do wyświetlenia.\n");
         } else {
@@ -68,12 +62,24 @@ public class BankReportGenerator {
 
             sb.append("----------------------------------------\n");
 
-            analyzer.findHighestTransaction().ifPresent(t -> {
-                String highest = String.format("NAJWYŻSZA TRANSAKCJA: %s (%.2f %s)\n",
-                        t.category(), t.amount(), t.currency());
-                sb.append(highest);
-            });
         }
+    }
+
+    public void generateSummary(ReportExporter exporter) {
+        StringBuilder sb = new StringBuilder(); // Nasz "bufor" na tekst
+        var summary = analyzer.calculateExpensesByCategory();
+
+        // Zamiast System.out.println, używamy sb.append()
+        sb.append("========================================\n");
+        sb.append("           RAPORT FINANSOWY             \n");
+        sb.append("========================================\n");
+        appendSummaryTable(sb, summary);
+
+        analyzer.findHighestTransaction().ifPresent(t -> {
+            String highest = String.format("NAJWYŻSZA TRANSAKCJA: %s (%.2f %s)\n",
+                    t.category(), t.amount(), t.currency());
+            sb.append(highest);
+        });
         sb.append("========================================\n");
 
         BigDecimal average = analyzer.calculateAverageTransactionAmount();
@@ -81,5 +87,25 @@ public class BankReportGenerator {
 
         // NA KONIEC: Wysyłamy gotowy tekst do eksportera!
         exporter.export(sb.toString());
+    }
+
+    public void generateMonthlyReport(YearMonth yearMonth, ReportExporter exporter){
+        StringBuilder sb = new StringBuilder(); // Nasz "bufo
+        sb.append("========================================\n");
+        sb.append("  RAPORT FINANSOWY ZA MIESIĄC " + yearMonth.toString() +" \n");
+        sb.append("========================================\n");
+        var monthlyTransactions = analyzer.findTransactionsInMonth(yearMonth);
+        if(monthlyTransactions.isEmpty()){
+            sb.append("Brak transakcji w podanym miesiącu");
+            exporter.export(sb.toString());
+            return;
+        }else{
+            var summary = analyzer.calculateExpensesByCategory(monthlyTransactions);
+            appendSummaryTable(sb, summary);
+
+            var total = analyzer.calculateTotalInMonth(yearMonth);
+            sb.append("SUMA WYDATKÓW: ").append(total).append(" PLN\n");
+            exporter.export(sb.toString());
+        }
     }
 }

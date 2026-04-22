@@ -1,4 +1,4 @@
-package pl.mentor.banking.analyzer.service;
+package pl.mentor.banking.analyzer.exporter;
 
 public class ConsoleReportExporter implements ReportExporter{
     @Override

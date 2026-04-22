@@ -1,4 +1,4 @@
-package pl.mentor.banking.analyzer.service;
+package pl.mentor.banking.analyzer.loader;
 
 import pl.mentor.banking.analyzer.model.Transaction;
 import java.util.List;

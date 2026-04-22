@@ -1,8 +1,7 @@
-package pl.mentor.banking.analyzer.service;
+package pl.mentor.banking.analyzer.loader;
 
 import pl.mentor.banking.analyzer.model.Transaction;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
