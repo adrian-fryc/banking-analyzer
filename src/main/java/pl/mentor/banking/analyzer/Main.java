@@ -37,6 +37,8 @@ public class Main {
             reportGenerator.generateMonthlyReport(YearMonth.of(2026, 5), new FileReportExporter("moj_raport_2026_05.txt"));
 //            reportGenerator.generateSummary(new FileReportExporter("moj_raport.txt")); // Do pliku
 
+            reportGenerator.generateAnnualReport(2026, new ConsoleReportExporter());
+
         }
 
 //        loader = new JsonTransactionLoader();
