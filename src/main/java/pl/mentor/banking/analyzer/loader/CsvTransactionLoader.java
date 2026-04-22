@@ -1,13 +1,9 @@
-package pl.mentor.banking.analyzer.service;
+package pl.mentor.banking.analyzer.loader;
 
 import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
 import pl.mentor.banking.analyzer.model.Transaction;
 import pl.mentor.banking.analyzer.model.TransactionCategory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;

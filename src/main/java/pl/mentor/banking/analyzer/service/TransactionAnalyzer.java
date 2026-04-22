@@ -1,16 +1,18 @@
 package pl.mentor.banking.analyzer.service;
 
-import com.opencsv.CSVReader;
+import pl.mentor.banking.analyzer.exception.NoTransactionsException;
+import pl.mentor.banking.analyzer.loader.TransactionSource;
 import pl.mentor.banking.analyzer.model.Transaction;
 import pl.mentor.banking.analyzer.model.TransactionCategory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Month;
+import java.time.YearMonth;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -49,17 +51,42 @@ public class TransactionAnalyzer {
     }
 
     public Map<TransactionCategory, BigDecimal> calculateExpensesByCategory(){
-        return transactions.stream()
+        return calculateExpensesByCategory(this.transactions);
+    }
+
+    public Map<TransactionCategory, BigDecimal> calculateExpensesByCategory(List<Transaction> source){
+        return source.stream()
                 .collect(Collectors.groupingBy(Transaction::category, Collectors.reducing(BigDecimal.ZERO, Transaction::amount, BigDecimal::add)));
     }
 
 //    Meotda do obliczania średniej z transakcji
     public BigDecimal calculateAverageTransactionAmount() {
+        if(transactions != null && !transactions.isEmpty()){
+            return transactions.stream()
+                    .map(Transaction::amount) // Wyciągnij same kwoty
+                    // W Streamach dla BigDecimal nie ma gotowego .average(),
+                    // więc musimy zsumować i podzielić przez rozmiar listy.
+                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .divide(BigDecimal.valueOf(transactions.size()), 2, RoundingMode.HALF_UP);
+        }else{
+            throw new NoTransactionsException("Nie można policzyć średniej dla pustej listy transakcji");
+        }
+    }
+
+    public List<Transaction> findTransactionsInMonth(YearMonth yearMonth) {
         return transactions.stream()
-                .map(Transaction::amount) // Wyciągnij same kwoty
-                // W Streamach dla BigDecimal nie ma gotowego .average(),
-                // więc musimy zsumować i podzielić przez rozmiar listy.
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .divide(BigDecimal.valueOf(transactions.size()), 2, RoundingMode.HALF_UP);
+                .filter(t -> t.date().getMonth() == yearMonth.getMonth() && t.date().getYear() == yearMonth.getYear())
+                .toList();
+    }
+
+    public BigDecimal calculateTotalInMonth(YearMonth yearMonth) {
+        List<Transaction> transactionsInMonth = findTransactionsInMonth(yearMonth);
+        if(transactionsInMonth != null && !transactionsInMonth.isEmpty()){
+            return transactionsInMonth.stream()
+                    .map(Transaction::amount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+        }else{
+            return BigDecimal.ZERO;
+        }
     }
 }

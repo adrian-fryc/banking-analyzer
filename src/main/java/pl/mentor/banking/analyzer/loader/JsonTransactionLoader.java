@@ -1,4 +1,4 @@
-package pl.mentor.banking.analyzer.service;
+package pl.mentor.banking.analyzer.loader;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

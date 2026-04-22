@@ -1,13 +1,13 @@
 package pl.mentor.banking.analyzer;
 
+import pl.mentor.banking.analyzer.exporter.ConsoleReportExporter;
+import pl.mentor.banking.analyzer.exporter.FileReportExporter;
+import pl.mentor.banking.analyzer.loader.CsvTransactionLoader;
+import pl.mentor.banking.analyzer.loader.TransactionSource;
 import pl.mentor.banking.analyzer.model.Transaction;
-import pl.mentor.banking.analyzer.payment.PaymentMethod;
-import pl.mentor.banking.analyzer.payment.PaymentTerminal;
-import pl.mentor.banking.analyzer.payment.service.BlikService;
-import pl.mentor.banking.analyzer.payment.service.VisaService;
 import pl.mentor.banking.analyzer.service.*;
 
-import java.util.List;
+import java.time.YearMonth;
 
 public class Main {
     public static void main(String[] args) {
@@ -31,9 +31,9 @@ public class Main {
 
             BankReportGenerator reportGenerator = new BankReportGenerator(analyzer);
             reportGenerator.printReport();
-            ReportExporter exporter = new ConsoleReportExporter();
-            reportGenerator.generateSummary(exporter);
-            reportGenerator.generateSummary(new FileReportExporter("moj_raport.txt")); // Do pliku
+            reportGenerator.generateSummary(new ConsoleReportExporter());
+            reportGenerator.generateMonthlyReport(YearMonth.of(2026, 5), new FileReportExporter("moj_raport_2026_05.txt"));
+//            reportGenerator.generateSummary(new FileReportExporter("moj_raport.txt")); // Do pliku
 
         }
 
