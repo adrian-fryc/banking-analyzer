@@ -47,7 +47,7 @@ public class TransactionAnalyzerTest {
         var result = analyzer.findHighestTransaction();
         assertTrue(result.isPresent());
 //        assertEquals(new BigDecimal("1000.00"), result.get().amount());
-        assertTrue(new BigDecimal("150.00").compareTo(result.get().amount()) == 0);
+        assertTrue(new BigDecimal("1000.00").compareTo(result.get().amount()) == 0);
     }
 
     @Test
