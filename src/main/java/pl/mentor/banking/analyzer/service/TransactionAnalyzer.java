@@ -2,17 +2,20 @@ package pl.mentor.banking.analyzer.service;
 
 import pl.mentor.banking.analyzer.exception.NoTransactionsException;
 import pl.mentor.banking.analyzer.loader.TransactionSource;
+import pl.mentor.banking.analyzer.model.FilterResult;
 import pl.mentor.banking.analyzer.model.Transaction;
 import pl.mentor.banking.analyzer.model.TransactionCategory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.YearMonth;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -88,5 +91,23 @@ public class TransactionAnalyzer {
         }else{
             return BigDecimal.ZERO;
         }
+    }
+
+    public FilterResult filterTransactions(Predicate<Transaction> predicate){
+        var result =  transactions.stream()
+                .filter(predicate)
+                .toList();
+        return new FilterResult(result, calculateTotal(result), LocalDateTime.now());
+    }
+
+    public BigDecimal calculateTotal(List<Transaction> list){
+        return list.stream()
+                .map(Transaction::amount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public Optional<Transaction> findClosestTransaction(BigDecimal targetAmount){
+        return transactions.stream()
+                .min(Comparator.comparing(transaction -> transaction.amount().subtract(targetAmount).abs()));
     }
 }
