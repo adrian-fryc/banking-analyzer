@@ -6,6 +6,7 @@ import pl.mentor.banking.analyzer.loader.CsvTransactionLoader;
 import pl.mentor.banking.analyzer.loader.TransactionLoaderFactory;
 import pl.mentor.banking.analyzer.loader.TransactionSource;
 import pl.mentor.banking.analyzer.model.Transaction;
+import pl.mentor.banking.analyzer.model.TransactionCategory;
 import pl.mentor.banking.analyzer.service.*;
 
 import java.time.YearMonth;
@@ -38,6 +39,9 @@ public class Main {
 //            reportGenerator.generateSummary(new FileReportExporter("moj_raport.txt")); // Do pliku
 
             reportGenerator.generateAnnualReport(2026, new ConsoleReportExporter());
+
+            var a = analyzer.filterTransactions(t -> t.category().equals(TransactionCategory.FUEL));
+            System.out.println("Filtered transactions: " + a);
 
         }
 

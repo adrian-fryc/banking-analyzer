@@ -105,4 +105,9 @@ public class TransactionAnalyzer {
                 .map(Transaction::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    public Optional<Transaction> findClosestTransaction(BigDecimal targetAmount){
+        return transactions.stream()
+                .min(Comparator.comparing(transaction -> transaction.amount().subtract(targetAmount).abs()));
+    }
 }
