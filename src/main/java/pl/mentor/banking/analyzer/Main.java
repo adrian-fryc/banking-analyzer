@@ -2,13 +2,16 @@ package pl.mentor.banking.analyzer;
 
 import pl.mentor.banking.analyzer.exporter.ConsoleReportExporter;
 import pl.mentor.banking.analyzer.exporter.FileReportExporter;
+import pl.mentor.banking.analyzer.exporter.PdfReportExporter;
 import pl.mentor.banking.analyzer.loader.CsvTransactionLoader;
 import pl.mentor.banking.analyzer.loader.TransactionLoaderFactory;
 import pl.mentor.banking.analyzer.loader.TransactionSource;
+import pl.mentor.banking.analyzer.model.ExportMetadata;
 import pl.mentor.banking.analyzer.model.Transaction;
 import pl.mentor.banking.analyzer.model.TransactionCategory;
 import pl.mentor.banking.analyzer.service.*;
 
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 
 public class Main {
@@ -35,10 +38,11 @@ public class Main {
             BankReportGenerator reportGenerator = new BankReportGenerator(analyzer);
             reportGenerator.printReport();
             reportGenerator.generateSummary(new ConsoleReportExporter());
-            reportGenerator.generateMonthlyReport(YearMonth.of(2026, 5), new FileReportExporter("moj_raport_2026_05.txt"));
+            reportGenerator.generateMonthlyReport(YearMonth.of(2026, 4), new FileReportExporter("moj_raport_2026_04.txt"));
 //            reportGenerator.generateSummary(new FileReportExporter("moj_raport.txt")); // Do pliku
 
             reportGenerator.generateAnnualReport(2026, new ConsoleReportExporter());
+            reportGenerator.generateAnnualReport(2026, new PdfReportExporter(new ExportMetadata("raport_2026.pdf", "Mentor", LocalDateTime.now())));
 
             var a = analyzer.filterTransactions(t -> t.category().equals(TransactionCategory.FUEL));
             System.out.println("Filtered transactions: " + a);
