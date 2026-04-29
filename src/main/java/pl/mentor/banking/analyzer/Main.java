@@ -17,7 +17,7 @@ import java.time.YearMonth;
 public class Main {
     public static void main(String[] args) {
         // 1. Inicjalizacja loadera
-        String path = "D:\\Programowanie(NAUKA)\\banking-analyzer\\src\\main\\resources\\transactions.json";
+        String path = "src\\main\\resources\\transactions.json";
         TransactionSource loader = TransactionLoaderFactory.getLoader(path);
 
         // 2. Próba wczytania danych z pliku w resources
