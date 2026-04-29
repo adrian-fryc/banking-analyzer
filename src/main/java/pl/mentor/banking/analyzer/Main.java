@@ -1,16 +1,16 @@
 package pl.mentor.banking.analyzer;
 
+import org.openpdf.text.Font;
 import pl.mentor.banking.analyzer.exporter.ConsoleReportExporter;
 import pl.mentor.banking.analyzer.exporter.FileReportExporter;
 import pl.mentor.banking.analyzer.exporter.PdfReportExporter;
 import pl.mentor.banking.analyzer.loader.CsvTransactionLoader;
 import pl.mentor.banking.analyzer.loader.TransactionLoaderFactory;
 import pl.mentor.banking.analyzer.loader.TransactionSource;
-import pl.mentor.banking.analyzer.model.ExportMetadata;
-import pl.mentor.banking.analyzer.model.Transaction;
-import pl.mentor.banking.analyzer.model.TransactionCategory;
+import pl.mentor.banking.analyzer.model.*;
 import pl.mentor.banking.analyzer.service.*;
 
+import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 
@@ -42,7 +42,8 @@ public class Main {
 //            reportGenerator.generateSummary(new FileReportExporter("moj_raport.txt")); // Do pliku
 
             reportGenerator.generateAnnualReport(2026, new ConsoleReportExporter());
-            reportGenerator.generateAnnualReport(2026, new PdfReportExporter(new ExportMetadata("raport_2026.pdf", "Mentor", LocalDateTime.now())));
+            reportGenerator.generateAnnualReport(2026, new PdfReportExporter(new ExportMetadata("raport_2026.pdf", "Mentor", LocalDateTime.now(), true),
+                    new PdfStyle(12, FontFamily.HELVETICA, Color.RED,false, false)));
 
             var a = analyzer.filterTransactions(t -> t.category().equals(TransactionCategory.FUEL));
             System.out.println("Filtered transactions: " + a);
