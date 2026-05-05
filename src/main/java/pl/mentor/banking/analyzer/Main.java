@@ -1,20 +1,23 @@
 package pl.mentor.banking.analyzer;
 
+import org.openpdf.text.Font;
 import pl.mentor.banking.analyzer.exporter.ConsoleReportExporter;
 import pl.mentor.banking.analyzer.exporter.FileReportExporter;
+import pl.mentor.banking.analyzer.exporter.PdfReportExporter;
 import pl.mentor.banking.analyzer.loader.CsvTransactionLoader;
 import pl.mentor.banking.analyzer.loader.TransactionLoaderFactory;
 import pl.mentor.banking.analyzer.loader.TransactionSource;
-import pl.mentor.banking.analyzer.model.Transaction;
-import pl.mentor.banking.analyzer.model.TransactionCategory;
+import pl.mentor.banking.analyzer.model.*;
 import pl.mentor.banking.analyzer.service.*;
 
+import java.awt.*;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 
 public class Main {
     public static void main(String[] args) {
         // 1. Inicjalizacja loadera
-        String path = "D:\\Programowanie(NAUKA)\\banking-analyzer\\src\\main\\resources\\transactions.json";
+        String path = "src\\main\\resources\\transactions.json";
         TransactionSource loader = TransactionLoaderFactory.getLoader(path);
 
         // 2. Próba wczytania danych z pliku w resources
@@ -35,10 +38,12 @@ public class Main {
             BankReportGenerator reportGenerator = new BankReportGenerator(analyzer);
             reportGenerator.printReport();
             reportGenerator.generateSummary(new ConsoleReportExporter());
-            reportGenerator.generateMonthlyReport(YearMonth.of(2026, 5), new FileReportExporter("moj_raport_2026_05.txt"));
+            reportGenerator.generateMonthlyReport(YearMonth.of(2026, 4), new FileReportExporter("moj_raport_2026_04.txt"));
 //            reportGenerator.generateSummary(new FileReportExporter("moj_raport.txt")); // Do pliku
 
             reportGenerator.generateAnnualReport(2026, new ConsoleReportExporter());
+            reportGenerator.generateAnnualReport(2026, new PdfReportExporter(new ExportMetadata("raport_2026.pdf", "Mentor", LocalDateTime.now(), true),
+                    new PdfStyle(12, FontFamily.HELVETICA, Color.RED,false, false)));
 
             var a = analyzer.filterTransactions(t -> t.category().equals(TransactionCategory.FUEL));
             System.out.println("Filtered transactions: " + a);
