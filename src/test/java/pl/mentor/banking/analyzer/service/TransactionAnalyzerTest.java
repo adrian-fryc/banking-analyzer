@@ -49,32 +49,10 @@ public class TransactionAnalyzerTest {
 //        BigDecimal result = analyzer.calculateTotalSpentInCategory(TransactionCategory.FOOD);
 //        assertEquals(0, new BigDecimal("150.00").compareTo(result));
 //    }
-    @Test
-    void calculateTotalSpentInCategory(){
-        // 1. Arrange (Scenariusz dla aktora)
-        List<Transaction> transactions = List.of(
-                new Transaction("1", new BigDecimal("100.00"), "PLN", LocalDate.now(), TransactionCategory.FOOD),
-                new Transaction("2", new BigDecimal("50.00"), "PLN", LocalDate.now(), TransactionCategory.FOOD)
-        );
 
-        // "Kiedy ktokolwiek zawoła loadTransactions z dowolnym Stringiem, zwróć tę listę"
-        when(loader.loadTransactions(anyString())).thenReturn(transactions);
+    /*
 
-        // 2. Ręczne stworzenie obiektu - TERAZ konstruktor pobierze dane z "zaprogramowanego" loadera
-        analyzer = new TransactionAnalyzer(loader, "transactions.json");
-
-        // 3. Act
-        BigDecimal result = analyzer.calculateTotalSpentInCategory(TransactionCategory.FOOD);
-        System.out.println("AAA " + result);
-
-        // 4. Assert
-        assertEquals(0, new BigDecimal("150.00").compareTo(result));
-
-        // 5. Verify (Opcjonalne, ale profesjonalne) - sprawdź czy loader został zawołany
-        verify(loader).loadTransactions(anyString());
-    }
-
-    @Test
+        @Test
     void shouldReturnZeroForEmptyCategory() {
         // Act
         BigDecimal result = analyzer.calculateTotalSpentInCategory(TransactionCategory.FUEL);
@@ -124,6 +102,135 @@ public class TransactionAnalyzerTest {
 
     @Test
     void shouldFilterTransactions(){
+        var result = analyzer.filterTransactions(t -> t.category().equals(TransactionCategory.FOOD));
+        assertEquals(2, result.transactions().size());
+        assertEquals(0, new BigDecimal("150.00").compareTo(result.totalAmount()));
+        assertNotNull(result.reportDate());
+    }
+
+     */
+
+
+    @Test
+    void calculateTotalSpentInCategory(){
+        // 1. Arrange (Scenariusz dla aktora)
+        List<Transaction> transactions = List.of(
+                new Transaction("1", new BigDecimal("100.00"), "PLN", LocalDate.now(), TransactionCategory.FOOD),
+                new Transaction("2", new BigDecimal("50.00"), "PLN", LocalDate.now(), TransactionCategory.FOOD)
+        );
+
+        // "Kiedy ktokolwiek zawoła loadTransactions z dowolnym Stringiem, zwróć tę listę"
+        when(loader.loadTransactions(anyString())).thenReturn(transactions);
+
+        // 2. Ręczne stworzenie obiektu - TERAZ konstruktor pobierze dane z "zaprogramowanego" loadera
+        analyzer = new TransactionAnalyzer(loader, "transactions.json");
+
+        // 3. Act
+        BigDecimal result = analyzer.calculateTotalSpentInCategory(TransactionCategory.FOOD);
+        System.out.println("AAA " + result);
+
+        // 4. Assert
+        assertEquals(0, new BigDecimal("150.00").compareTo(result));
+
+        // 5. Verify (Opcjonalne, ale profesjonalne) - sprawdź czy loader został zawołany
+        verify(loader).loadTransactions(anyString());
+    }
+
+    @Test
+    void shouldReturnZeroForEmptyCategory() {
+
+        List<Transaction> transactions = List.of(
+        );
+
+        when(loader.loadTransactions(anyString())).thenReturn(transactions);
+        analyzer = new TransactionAnalyzer(loader, "transactions.json");
+        BigDecimal result = analyzer.calculateTotalSpentInCategory(TransactionCategory.FUEL);
+        // Assert
+        assertEquals(BigDecimal.ZERO, result);
+        verify(loader).loadTransactions(anyString());
+    }
+
+    @Test
+    void shouldFindHighestTransaction(){
+        List<Transaction> transactions = List.of(
+                new Transaction("1", new BigDecimal("1000.00"), "PLN", LocalDate.now(), TransactionCategory.FOOD),
+                new Transaction("2", new BigDecimal("500.00"), "PLN", LocalDate.now(), TransactionCategory.FOOD)
+        );
+
+        when(loader.loadTransactions(anyString())).thenReturn(transactions);
+
+        analyzer = new TransactionAnalyzer(loader, "transactions.json");
+        var result = analyzer.findHighestTransaction();
+        assertTrue(result.isPresent());
+        assertEquals(0, new BigDecimal("1000.00").compareTo(result.get().amount()));
+    }
+
+    @Test
+    void shouldReturnEmptyOptionalWhenNoTransactions(){
+        List<Transaction> transactions = List.of(
+        );
+
+        when(loader.loadTransactions(anyString())).thenReturn(transactions);
+
+        analyzer = new TransactionAnalyzer(loader, "transactions.json");
+        var result = analyzer.findHighestTransaction();
+        assertTrue(result.isEmpty());
+        verify(loader).loadTransactions(anyString());
+    }
+
+    @Test
+    void shouldReturnZeroAverageWhenNoTransactions() {
+        List<Transaction> transactions = List.of(
+        );
+
+        when(loader.loadTransactions(anyString())).thenReturn(transactions);
+
+        analyzer = new TransactionAnalyzer(loader, "transactions.json");
+
+        // Act & Assert (Robimy to w jednej linii!)
+        var exception = assertThrows(NoTransactionsException.class, analyzer::calculateAverageTransactionAmount, "Tu powinien być Brak transakcji"
+        );
+        // Opcjonalnie: Sprawdź, czy wiadomość w błędzie jest taka, jak chciałeś
+        assertTrue(exception.getMessage().contains("Brak transakcji"));
+        verify(loader).loadTransactions(anyString());
+    }
+
+    @Test
+    void shouldFindClosestTransaction() {
+        List<Transaction> transactions = List.of(
+                new Transaction("1", new BigDecimal("150.00"), "PLN", LocalDate.now(), TransactionCategory.FOOD),
+                new Transaction("2", new BigDecimal("100.00"), "PLN", LocalDate.now(), TransactionCategory.FOOD)
+        );
+        when(loader.loadTransactions(anyString())).thenReturn(transactions);
+
+        analyzer = new TransactionAnalyzer(loader, "transactions.json");
+        var result = analyzer.findClosestTransaction(new BigDecimal("100.00"));
+        assertTrue(result.isPresent());
+        assertEquals(new BigDecimal("100.00"), result.get().amount());
+    }
+
+    @Test
+    void shouldReturnEmptyOptionalWhenNoTransactionsArePresent(){
+        List<Transaction> transactions = List.of(
+        );
+
+        when(loader.loadTransactions(anyString())).thenReturn(transactions);
+
+        analyzer = new TransactionAnalyzer(loader, "transactions.json");
+        var result = analyzer.findClosestTransaction(new BigDecimal("100.00"));
+        assertTrue(result.isEmpty());
+        verify(loader).loadTransactions(anyString());
+    }
+
+    @Test
+    void shouldFilterTransactions(){
+        List<Transaction> transactions = List.of(
+                new Transaction("1", new BigDecimal("50.00"), "PLN", LocalDate.now(), TransactionCategory.FOOD),
+                new Transaction("2", new BigDecimal("100.00"), "PLN", LocalDate.now(), TransactionCategory.FOOD)
+        );
+        when(loader.loadTransactions(anyString())).thenReturn(transactions);
+
+        analyzer = new TransactionAnalyzer(loader, "transactions.json");
         var result = analyzer.filterTransactions(t -> t.category().equals(TransactionCategory.FOOD));
         assertEquals(2, result.transactions().size());
         assertEquals(0, new BigDecimal("150.00").compareTo(result.totalAmount()));
